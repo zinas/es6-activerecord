@@ -12,14 +12,12 @@ var babelify = require('babelify');
 
 // Browserify
 gulp.task('browserify', function() {
-  return browserify({debug: true})
+  browserify({debug: true})
     .add('./app/scripts/main.js')
-    // .external('jquery')
-    // .external('lodash')
-    // .external('backbone')
     .transform(partialify) // Transform to allow requireing of templates
     .transform(babelify)
     .bundle()
+    .on('error', function(err){ console.log(err.message); this.emit('end'); })
     .pipe(source('main.js'))
     .pipe(gulp.dest(config.dist + '/scripts/'));
 });

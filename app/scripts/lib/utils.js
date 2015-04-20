@@ -31,18 +31,16 @@ utils.ajax = function(url, data, method = 'GET', parseJson = true) {
   }
 
   request.onload = function() {
-    console.log('success', request);
     if (request.status >= 200 && request.status < 400) {
       var resolution = parseJson ? JSON.parse(request.responseText) : request.responseText;
       deferred.resolve(resolution);
     } else {
-      console.log('onload error');
       deferred.reject(request);
     }
   };
 
   request.onerror = function() {
-    console.log('onerror error');
+    console.log('arguments', arguments);
     deferred.reject(request);
   };
 
@@ -54,5 +52,15 @@ utils.ajax = function(url, data, method = 'GET', parseJson = true) {
 
   return deferred.promise;
 };
+
+/**
+ * Returns the plural form of a word
+ *
+ * @param  {String} str any word
+ * @return {String}
+ */
+utils.pluralize = function (str) {
+  return str + 's';
+}
 
 module.exports = utils;
