@@ -22,9 +22,15 @@ import Car from './models/car';
 // });
 
 
-Car.find(26).then(function (car) {
+// Car.find(26).then(function (car) {
 
-  car.brand = 'nikos2';
-  car.save();
+//   car.brand = 'nikos2';
+//   car.save();
 
-});
+// });
+
+// Car.find({brand: 'Seat'}).then(function (cars) {
+//   cars.forEach(function (car) {
+//     console.log(car.model);
+//   });
+// });

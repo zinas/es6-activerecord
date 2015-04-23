@@ -84,7 +84,7 @@ function __getUrl(model, params = null ) {
     if ( params && typeof params !== 'object' ) {
         url = url + '/' + params;
     } else if (params && typeof params === 'object' ) {
-        url = url + '?' + utils.serializeJSON(params);
+        url = url + '?' + utils.serializeJSON(params, model);
     }
 
     return url;

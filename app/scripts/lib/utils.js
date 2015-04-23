@@ -68,15 +68,17 @@ utils.pluralize = function (str) {
  * @param  {Object} json input to serialize
  * @return {String}
  */
-utils.serializeJSON = function (json) {
+utils.serializeJSON = function (json, model = null) {
   var i, tmp = [];
   if ( typeof json !== 'object' ) {
     throw 'utils.serializeJSON expects a json as an input';
   }
 
   for ( i in json ) {
-    tmp.push(i+'='+json[i]);
+    tmp.push(model+'['+i+']='+json[i]);
   }
+
+  console.log(tmp.join('&'));
 
   return tmp.join('&');
 };

@@ -150,27 +150,47 @@ class Activerecord {
   /**
    * Finds by id. Returns instantiated AR
    *
-   * @param  {Any}    id if to search for
+   * @param  {Mixed}    id if to search for
    * @return {Promise}
    */
   static findById(id) {
     return crud.read(this.modelName, id).then((function (data) {
       var ar = new this();
-      ar.__loadFetchedData(data);
-      return ar;
+      return ar.__loadFetchedData(data);
     }).bind(this), function (error) {
       console.log('error', error);
     });
   }
 
   /**
-   * Verstile functions for searching
+   * Finds by attributes. Returns array of instantiated AR
+   *
+   * @param  {Object}   params attributes to search for
+   * @return {Promise}
+   */
+  static findByAttributes(params) {
+    return crud.read(this.modelName, params).then((function (data) {
+      return data.map( (function (attributes) {
+        var ar = new this();
+        return ar.__loadFetchedData(attributes);
+      }).bind(this) );
+    }).bind(this), function (error) {
+      console.log('error', error);
+    });
+  }
+
+  /**
+   * Verstile function for searching
    *
    * @return {Promise}
    */
   static find() {
     if ( arguments.length === 1 && typeof arguments[0] !== 'object' ) {
       return this.findById(arguments[0]);
+    }
+
+    if ( arguments.length === 1 && typeof arguments[0] === 'object' ) {
+      return this.findByAttributes(arguments[0]);
     }
 
     throw 'Unknown parameter list in find()';
