@@ -18,8 +18,12 @@ var crud = {};
  * @return {xhr}           xhr object, to bind callbacks
  */
 crud.create = function (model, params) {
-    var url = __getUrlFromModelName(model);
-    return utils.ajax(url, params, 'POST');
+    var
+        url = __getUrlFromModelName(model),
+        data = {};
+
+    data[model] = params;
+    return utils.ajax(url, data, 'POST');
 };
 
 /**

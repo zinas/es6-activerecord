@@ -27,7 +27,7 @@ utils.ajax = function(url, data, method = 'GET', parseJson = true) {
   request.open(method, url, true);
 
   if ( data && method !== 'GET' ) {
-    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
   }
 
   request.onload = function() {
@@ -40,14 +40,13 @@ utils.ajax = function(url, data, method = 'GET', parseJson = true) {
   };
 
   request.onerror = function() {
-    console.log('arguments', arguments);
     deferred.reject(request);
   };
 
   if ( method === 'GET' ) {
     request.send();
   } else {
-    request.send(data);
+    request.send(JSON.stringify(data));
   }
 
   return deferred.promise;

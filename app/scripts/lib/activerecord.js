@@ -6,8 +6,11 @@ import utils from './utils';
 class Activerecord {
   constructor(config) {
     // Model state initialization
-    this.isNew = true;
-    this.isDirty = false;
+    this.flags = {
+      new: true,
+      dirty: false
+    };
+
     this.values = {};
 
     this.__defineProperties();
@@ -69,7 +72,9 @@ class Activerecord {
         set(val) {
           if ( val !== self.values[prop] ) {
             self.values[prop] = val;
-            self.isDirty = true;
+            if ( !self.flags.new ) {
+              self.flags.dirty = true;
+            }
           }
         }
       });
@@ -95,10 +100,37 @@ class Activerecord {
       this.values[property] = properties[property];
     }).bind(this));
 
-    this.isNew = false;
-    this.isDirty = false;
+    this.flags.new = false;
+    this.flags.dirty = false;
 
     return this;
+  }
+
+  /*** public methods ***/
+
+  /**
+   * Saves (persist) the model. Call is the same, whether updating or
+   * creating a new record
+   *
+   * @return {this}
+   */
+  save() {
+    var promise;
+
+    // here do the before save actions
+
+    if ( this.flags.new ) {
+      promise = crud.create(this.modelName, this.values);
+    } else if ( this.flags.dirty ) {
+
+    } else {
+      throw 'trying to persist a model without active changes';
+    }
+
+    // here do the after save
+    // promise.then(...);
+
+    return promise;
   }
 
   /*** Static methods ***/
