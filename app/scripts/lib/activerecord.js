@@ -10,17 +10,74 @@ class Activerecord {
     this.isDirty = false;
     this.values = {};
 
-    if ( !config ) {
-      this.constructor.properties().forEach((function (property) {
-        this.values[property] = '';
-      }).bind(this));
-    }
+    this.__defineProperties();
 
     if ( typeof config === 'object' ) {
-      this.constructor.properties().forEach((function (property) {
+      this.props.forEach((function (property) {
+        // avoid the setter. Setter is only used when the
+        // model should become dirty
         this.values[property] = config[property];
       }).bind(this));
     }
+  }
+
+  /*** Static methods ***/
+
+  /**
+   * Proxying the static method for simplicity
+   *
+   * @return {String} Primary key of the model
+   */
+  get pk() {
+    return this.constructor.pk;
+  }
+
+  /**
+   * Proxying the static method for simplicity
+   *
+   * @return {String} name of the model
+   */
+  get modelName() {
+    return this.constructor.modelName;
+  }
+
+  /**
+   * Proxying the static method for simplicity
+   *
+   * @return {Array} property names
+   */
+  get props() {
+    return this.constructor.props;
+  }
+
+  /*** "Private" methods ***/
+
+  /**
+   * Defines all the properties of the model and initializes them
+   *
+   * Depends on the propery names
+   *
+   * @return {this}
+   */
+  __defineProperties() {
+    var i, self = this;
+    this.props.forEach( (function (prop) {
+      Object.defineProperty(this, prop, {
+        get() {
+          return self.values[prop];
+        },
+        set(val) {
+          if ( val !== self.values[prop] ) {
+            self.values[prop] = val;
+            self.isDirty = true;
+          }
+        }
+      });
+
+      this.values[prop] = null;
+    }).bind(this) );
+
+    return this;
   }
 
   /**
@@ -30,43 +87,16 @@ class Activerecord {
    * @param  {Object} properties values to load
    * @return {this}
    */
-  __init(properties) {
-    if ( !properties[this.constructor.pk()] ) {
-      throw '__init called, but primary key is missing from arguments';
+  __loadFetchedData(properties) {
+    if ( !properties[this.pk] ) {
+      throw '__loadFetchedData called, but primary key is missing from arguments';
     }
-    this.constructor.properties().forEach((function (property) {
-      this.set(property, properties[property]);
+    this.props.forEach((function (property) {
+      this.values[property] = properties[property];
     }).bind(this));
-
 
     this.isNew = false;
     this.isDirty = false;
-    return this;
-  }
-
-  /**
-   * Getter for the properties
-   * Returns all values array if no parameter is given
-   *
-   * @param  {String} property key to get the value for
-   * @return {mixed}           value for the key, or all the values array
-   */
-  get(property) {
-    return property?this.values[property]:this.values;
-  }
-
-  /**
-   * Setter for the properties
-   *
-   * @param  {String} property key to set the value for
-   * @param  {mixed}  value    value to set
-   * @return {this}
-   */
-  set(property, value) {
-    if ( this.values[property] !== value ) {
-      this.isDirty = true;
-    }
-    this.values[property] = value;
 
     return this;
   }
@@ -80,9 +110,9 @@ class Activerecord {
    * @return {Promise}
    */
   static findById(id) {
-    return crud.read(this.model(), id).then((function (data) {
+    return crud.read(this.modelName, id).then((function (data) {
       var ar = new this();
-      ar.__init(data);
+      ar.__loadFetchedData(data);
       return ar;
     }).bind(this), function (error) {
       console.log('error', error);
@@ -106,7 +136,7 @@ class Activerecord {
    * Returns the model name
    * @return {String}
    */
-  static model() {
+  static get modelName() {
     return utils.pluralize(this.name.toLowerCase());
   }
 
@@ -115,7 +145,7 @@ class Activerecord {
    *
    * @return {String}
    */
-  static pk() {
+  static get pk() {
     return 'id';
   }
 
@@ -124,7 +154,7 @@ class Activerecord {
    *
    * @return {Array}
    */
-  static properties() {
+  static get props() {
     // Make sure the user defines this in his record
     throw 'You must define a static method properties() in the model ' + this.nane;
   }

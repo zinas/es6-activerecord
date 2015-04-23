@@ -3,7 +3,7 @@
 import Activerecord from '../lib/activerecord';
 
 class Car extends Activerecord {
-  static properties() {
+  static get props() {
     return ['id', 'brand', 'model', 'price', 'year'];
   }
 };

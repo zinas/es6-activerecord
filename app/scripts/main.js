@@ -10,5 +10,9 @@ import Car from './models/car';
 
 
 Car.find(2).then(function (car) {
-  console.log(car.get());
+  console.log('brand', car.brand);
+
+  car.brand = 'nikos';
+
+  console.log(car);
 });
