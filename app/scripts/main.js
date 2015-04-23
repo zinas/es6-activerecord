@@ -8,25 +8,23 @@ import Car from './models/car';
 //   console.log('bad', error);
 // });
 
-var car = new Car();
+// var car = new Car();
 
-car.brand = 'BMW';
-car.model = 'Z3';
-car.price = 30000;
-car.year = 2012;
+// car.brand = 'BMW';
+// car.model = 'Z3';
+// car.price = 30000;
+// car.year = 2012;
 
-car.save().then(function (success) {
-  console.log('good', success);
-}, function (error) {
-  console.log('bad', error);
-});
-
-
-// Car.find(2).then(function (car) {
-//   console.log('brand', car.brand);
-//   console.log(car);
-
-//   // car.brand = 'nikos';
-
-//   console.log(car);
+// car.save().then(function (c) {
+//   console.log('good', c);
+// }, function (error) {
+//   console.log('bad', error);
 // });
+
+
+Car.find(26).then(function (car) {
+
+  car.brand = 'nikos2';
+  car.save();
+
+});

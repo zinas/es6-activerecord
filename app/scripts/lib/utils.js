@@ -60,6 +60,25 @@ utils.ajax = function(url, data, method = 'GET', parseJson = true) {
  */
 utils.pluralize = function (str) {
   return str + 's';
-}
+};
+
+/**
+ * Serializes a json
+ *
+ * @param  {Object} json input to serialize
+ * @return {String}
+ */
+utils.serializeJSON = function (json) {
+  var i, tmp = [];
+  if ( typeof json !== 'object' ) {
+    throw 'utils.serializeJSON expects a json as an input';
+  }
+
+  for ( i in json ) {
+    tmp.push(i+'='+json[i]);
+  }
+
+  return tmp.join('&');
+};
 
 module.exports = utils;

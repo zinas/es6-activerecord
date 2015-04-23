@@ -17,13 +17,14 @@ var crud = {};
  * @param  {Object} params parameters to post along the request
  * @return {xhr}           xhr object, to bind callbacks
  */
-crud.create = function (model, params) {
+crud.create = function (model, data) {
     var
-        url = __getUrlFromModelName(model),
-        data = {};
+        url = __getUrl(model),
+        dataToSend = {};
 
-    data[model] = params;
-    return utils.ajax(url, data, 'POST');
+    dataToSend[model] = params;
+
+    return utils.ajax(url, dataToSend, 'POST');
 };
 
 /**
@@ -34,12 +35,9 @@ crud.create = function (model, params) {
  * @return {xhr}           xhr object, to bind callbacks
  */
 crud.read = function (model, params) {
-    var url = __getUrlFromModelName(model);
-    if ( typeof params !== 'object' ) {
-        url = url + '/' + params;
-        params = null;
-    }
-    return utils.ajax(url, params, 'GET').then(function (response) {
+    var url = __getUrl(model, params);
+
+    return utils.ajax(url, null, 'GET').then(function (response) {
         return response[model];
     }, function (response) {
 
@@ -53,8 +51,14 @@ crud.read = function (model, params) {
  * @param  {Object} params parameters to post along the request
  * @return {xhr}           xhr object, to bind callbacks
  */
-crud.update = function (model, params) {
-    return utils.ajax(url, params, 'PUT');
+crud.update = function (model, params, data) {
+    var
+        url = __getUrl(model, params),
+        dataToSend = {};
+
+    dataToSend[model] = data;
+
+    return utils.ajax(url, dataToSend, 'PUT');
 };
 
 /**
@@ -74,8 +78,16 @@ crud.delete = function (model, params) {
  * @param  {String} model name of the model
  * @return {String}       endpoint url
  */
-function __getUrlFromModelName(model) {
-    return CONFIG.ENDPOINT + '/' + model;
+function __getUrl(model, params = null ) {
+    var url = CONFIG.ENDPOINT + '/' + model;
+
+    if ( params && typeof params !== 'object' ) {
+        url = url + '/' + params;
+    } else if (params && typeof params === 'object' ) {
+        url = url + '?' + utils.serializeJSON(params);
+    }
+
+    return url;
 }
 
 module.exports = crud;

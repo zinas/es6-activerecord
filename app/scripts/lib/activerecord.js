@@ -115,22 +115,34 @@ class Activerecord {
    * @return {this}
    */
   save() {
-    var promise;
+    var resolution;
 
-    // here do the before save actions
+    if ( typeof this.beforeSave === 'function' ) {
+      this.beforeSave();
+    }
 
     if ( this.flags.new ) {
-      promise = crud.create(this.modelName, this.values);
+      resolution = crud.create(this.modelName, this.values);
     } else if ( this.flags.dirty ) {
-
+      resolution = crud.update(this.modelName, this.values[this.pk], this.values);
     } else {
       throw 'trying to persist a model without active changes';
     }
 
-    // here do the after save
-    // promise.then(...);
+    resolution = resolution.then( (function(success) {
+      this.flags.new = false;
+      this.flags.dirty = false;
 
-    return promise;
+      if ( typeof this.afterSave === 'function' ) {
+        this.afterSave();
+      }
+
+      return this;
+    }).bind(this), (function(error) {
+      // TODO handle this
+    }).bind(this));
+
+    return resolution;
   }
 
   /*** Static methods ***/
