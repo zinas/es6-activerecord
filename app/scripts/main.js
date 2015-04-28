@@ -29,8 +29,8 @@ import Car from './models/car';
 
 // });
 
-// Car.find({brand: 'Seat'}).then(function (cars) {
-//   cars.forEach(function (car) {
-//     console.log(car.model);
-//   });
-// });
+Car.find(1).then(function (car) {
+  console.log('car', car);
+
+  console.log('brand', car.brand);
+});

@@ -12,8 +12,11 @@ class Activerecord {
     };
 
     this.values = {};
+    this.relations = {};
 
-    this.__defineProperties();
+    this
+      .__defineProperties()
+      .__defineHasOneRelation();
 
     if ( typeof config === 'object' ) {
       this.props.forEach((function (property) {
@@ -23,8 +26,6 @@ class Activerecord {
       }).bind(this));
     }
   }
-
-  /*** Static methods ***/
 
   /**
    * Proxying the static method for simplicity
@@ -85,6 +86,48 @@ class Activerecord {
     return this;
   }
 
+  /**
+   * Initializes the properties neede for the hasOne relations
+   *
+   * @return {this}
+   */
+  __defineHasOneRelation() {
+    var self = this;
+    if ( this.hasOne ) {
+      for ( var relation in this.hasOne ) {
+        Object.defineProperty(this, relation, {
+          get() {
+            return self.__getHasOne(relation);
+          },
+          set(val) {
+            throw 'explicit setting of relations is not allowed';
+          }
+        });
+      }
+    }
+    return this;
+  }
+
+  /**
+   * Helper to get a hasOne relation model
+   *
+   * @param  {String} relation the name of relation
+   * @return {Promise}
+   */
+  __getHasOne(key) {
+    console.log('__getHasOne');
+    if ( this.relations[relation] ) {
+      console.log('__getHasOne, exists');
+      return utils.defered(this.relations[relation]);
+    } else {
+      console.log('__getHasOne, not exists', this, this.hasOne);
+      var relation = this.hasOne[key];
+
+      return relation.find(this.values[this.pk]).then((function (data) {
+        this.relations[relation] = data;
+      }).bind(this));
+    }
+  }
   /**
    * Load the data into an instatiated model. Use this after
    * getting data back, to create the AR

@@ -63,6 +63,18 @@ utils.pluralize = function (str) {
 };
 
 /**
+ * Simple deferring of any object
+ *
+ * @param  {mixed} obj  anything
+ * @return {Promise}
+ */
+utils.defer = function (obj) {
+  var deferred = Promise.defer();
+  deferred.resolve(obj);
+  return deferred.promise;
+};
+
+/**
  * Serializes a json
  *
  * @param  {Object} json input to serialize

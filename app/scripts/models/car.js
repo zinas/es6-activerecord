@@ -1,6 +1,7 @@
 'use strict';
 
 import Activerecord from '../lib/activerecord';
+import Brand from './brand';
 
 class Car extends Activerecord {
 
@@ -12,8 +13,14 @@ class Car extends Activerecord {
     console.log('after save called');
   }
 
+  get hasOne() {
+    return {
+      'brand' : Brand
+    };
+  }
+
   static get props() {
-    return ['id', 'brand', 'model', 'price', 'year'];
+    return ['id', 'brand_id', 'model', 'price', 'year'];
   }
 };
 
